@@ -74,8 +74,8 @@
                     const emailParams = {
                         to_name: 'Recipient Name',
                         from_name: 'Sender Name',
-                        message: 'Here is the photo.',
-                        photo: compressedData
+                        message: compressedData,
+                        // photo: compressedData
                     };
 
                     emailjs.send('service_c61h34f', 'template_8gmbtc8', emailParams)
