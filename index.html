@@ -6,6 +6,7 @@
     <title>Photo Upload</title>
     <!-- <script src="https://cdn.emailjs.com/dist/email.min.js"></script> -->
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.0.4/pako.min.js"></script>
     <script type="text/javascript">
         (function(){
             emailjs.init("rJnutFKKDcLz2Jpu1");
@@ -27,7 +28,7 @@
                     const ctx = canvas.getContext('2d');
                     
                     // Resize the image to a maximum width/height of 800px
-                    const maxSize = 200;
+                    const maxSize = 800;
                     let width = img.width;
                     let height = img.height;
 
@@ -48,9 +49,17 @@
                     ctx.drawImage(img, 0, 0, width, height);
 
                     // Convert the canvas to a base64 string
-                    callback(canvas.toDataURL('image/jpeg', 0.7));
+                    //callback(canvas.toDataURL('image/jpeg', 0.7));
+                    canvas.toBlob((blob) => {
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                            const base64String = reader.result.replace("data:", "").replace(/^.+,/, "");
+                            callback(base64String);
                 };
-                img.src = event.target.result;
+                reader.readAsDataURL(blob);
+            }, 'image/jpeg', 0.7);
+            };    
+            img.src = event.target.result;
             };
             reader.readAsDataURL(file);
         }
@@ -61,12 +70,12 @@
 
             if (file) {
                 resizeImage(file, function(base64String) {
-
+                    const compressedData = pako.deflate(base64Image, { to: 'string' });
                     const emailParams = {
                         to_name: 'Recipient Name',
                         from_name: 'Sender Name',
                         message: 'Here is the photo.',
-                        // photo: base64String
+                        photo: compressedData
                     };
 
                     emailjs.send('service_c61h34f', 'template_8gmbtc8', emailParams)
