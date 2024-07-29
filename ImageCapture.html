@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photo Upload</title>
+    <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function(){
+            emailjs.init("rJnutFKKDcLz2Jpu1");
+        })();
+    </script>
+</head>
+<body>
+    <h1>Upload Photo</h1>
+    <input type="file" id="fileInput" accept="image/*" capture="environment" />
+    <button id="sendEmailButton">Send Photo via Email</button>
+
+    <script>
+        document.getElementById('sendEmailButton').addEventListener('click', () => {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onloadend = function() {
+                    const base64String = reader.result.replace("data:", "").replace(/^.+,/, "");
+
+                    const emailParams = {
+                        to_name: 'Recipient Name',
+                        from_name: 'Sender Name',
+                        message: 'Here is the photo.',
+                        photo: base64String
+                    };
+
+                    emailjs.send('service_c61h34f', 'template_8gmbtc8', emailParams)
+                        .then((response) => {
+                            console.log('SUCCESS!', response.status, response.text);
+                            alert('Photo sent successfully.');
+                        }, (error) => {
+                            console.error('FAILED...', error);
+                            alert('Failed to send photo.');
+                        });
+                };
+                reader.readAsDataURL(file);
+            } else {
+                alert('Please select a photo.');
+            }
+        });
+    </script>
+</body>
+</html>
