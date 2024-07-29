@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,25 +9,26 @@
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.0.4/pako.min.js"></script>
     <script type="text/javascript">
-        (function(){
+        (function () {
             emailjs.init("rJnutFKKDcLz2Jpu1");
         })();
     </script>
 </head>
+
 <body>
     <h1>Upload Photo</h1>
     <input type="file" id="fileInput" accept="image/*" capture="environment" />
     <button id="sendEmailButton">Send Photo via Email</button>
 
     <script>
-     function resizeImage(file, callback) {
+        function resizeImage(file, callback) {
             const reader = new FileReader();
-            reader.onload = function(event) {
+            reader.onload = function (event) {
                 const img = new Image();
-                img.onload = function() {
+                img.onload = function () {
                     const canvas = document.createElement('canvas');
                     const ctx = canvas.getContext('2d');
-                    
+
                     // Resize the image to a maximum width/height of 800px
                     const maxSize = 800;
                     let width = img.width;
@@ -55,11 +57,11 @@
                         reader.onloadend = () => {
                             const base64String = reader.result.replace("data:", "").replace(/^.+,/, "");
                             callback(base64String);
+                        };
+                        reader.readAsDataURL(blob);
+                    }, 'image/jpeg', 0.7);
                 };
-                reader.readAsDataURL(blob);
-            }, 'image/jpeg', 0.7);
-            };    
-            img.src = event.target.result;
+                img.src = event.target.result;
             };
             reader.readAsDataURL(file);
         }
@@ -69,13 +71,13 @@
             const file = fileInput.files[0];
 
             if (file) {
-                resizeImage(file, function(base64String) {
-                    const compressedData = pako.deflate(base64Image, { to: 'string' });
+                resizeImage(file, function (base64String) {
+                    const compressedData = pako.deflate(base64String, { to: 'string' });
                     const emailParams = {
                         to_name: 'Recipient Name',
                         from_name: 'Sender Name',
-                        message: compressedData,
-                        // photo: compressedData
+                        message: 'Sup',
+                        photo: compressedData
                     };
 
                     emailjs.send('service_c61h34f', 'template_8gmbtc8', emailParams)
@@ -94,4 +96,5 @@
         });
     </script>
 </body>
+
 </html>
